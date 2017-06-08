@@ -39,16 +39,16 @@ describe('gRPC server', () => {
 
     certificates((_, pem) => {
       serverCerts = {
-        ca: pem.certificate,
         key: pem.privateKey,
         server: pem.certificate
       }
 
-      clientCerts.ca = pem.certificate
-
       certificates((__, _pem) => {
-        clientCerts.key = _pem.privateKey
-        clientCerts.client = _pem.certificate
+        clientCerts = {
+          ca: pem.certificate,
+          key: _pem.privateKey,
+          client: _pem.certificate
+        }
 
         done()
       })
