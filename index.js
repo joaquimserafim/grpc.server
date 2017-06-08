@@ -69,7 +69,7 @@ module.exports = function factory (config) {
 function setAuthentication (certs) {
 
   return isObject(certs) && ServerCredentials.createSsl(
-    Buffer.from(certs.ca),
+    null,
     [
       {
         'cert_chain': Buffer.from(certs.server),

@@ -16,7 +16,7 @@ a simple abstraction around grpc.Server
 
 * **server(an optional {})**
   - **address** string with the format `url:port`
-  - **creedentials** can use `credentials.createInsecure` or with certificates through an object { ca, key, client }
+  - **creedentials** can use `credentials.createInsecure` or with certificates through an object { key, server }
   - **metadata** set metadata that can be used in all calls, an array with { key: value }
 
 **methods**
