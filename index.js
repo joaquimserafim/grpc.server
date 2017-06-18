@@ -14,8 +14,9 @@ class GrpcServer {
 
   constructor (config = {}) {
     const address = config.address || '0.0.0.0:50051'
-    const creedentials = setAuthentication(config.creedentials) ||
-      ServerCredentials.createInsecure()
+    const creedentials = isObject(config.credentials)
+      ? setAuthentication(config.credentials)
+      : ServerCredentials.createInsecure()
 
     this._server = new Server()
     this._server.bind(address, creedentials)
@@ -68,12 +69,12 @@ module.exports = function factory (config) {
 
 function setAuthentication (certs) {
 
-  return isObject(certs) && ServerCredentials.createSsl(
+  return ServerCredentials.createSsl(
     null,
     [
       {
-        'cert_chain': Buffer.from(certs.server),
-        'private_key': Buffer.from(certs.key)
+        'cert_chain': certs.server,
+        'private_key': certs.key
       }
     ]
   )

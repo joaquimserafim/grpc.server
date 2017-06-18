@@ -7,12 +7,11 @@ max-len: ["error", 80]
 'use strict'
 
 const { describe, it, before } = require('mocha')
-const { expect }  = require('chai')
-const client      = require('grpc.client')
+const { expect }        = require('chai')
+const client            = require('grpc.client')
+const { readFileSync }  = require('fs')
 
 const server = require('../')
-
-const certificates = require('./create-certificates')
 
 var serverCerts = {}
 var clientCerts = {}
@@ -37,22 +36,22 @@ describe('gRPC server', () => {
 
   before((done) => {
 
-    certificates((_, pem) => {
-      serverCerts = {
-        key: pem.privateKey,
-        server: pem.certificate
-      }
+    const key = readFileSync('test/fixtures/certs/server_private.key')
+    const crt = readFileSync('test/fixtures/certs/server.crt')
+    const ca = readFileSync('test/fixtures/certs/ca.crt')
 
-      certificates((__, _pem) => {
-        clientCerts = {
-          ca: pem.certificate,
-          key: _pem.privateKey,
-          client: _pem.certificate
-        }
+    serverCerts = {
+      key: key,
+      server: crt
+    }
 
-        done()
-      })
-    })
+    clientCerts = {
+      ca: ca,
+      key: key,
+      client: crt
+    }
+
+    done()
   })
 
   it('should throw an error when not passing any service', (done) => {
@@ -68,7 +67,7 @@ describe('gRPC server', () => {
     (done) => {
       let serverA = server(
         {
-          creedentials: serverCerts,
+          credentials: serverCerts,
           address: '127.0.0.1:50052'
         }
       )
@@ -105,18 +104,28 @@ describe('gRPC server', () => {
 
   it('should do a rpc call between server / client for an authenticated' +
     ' server / client',
-    (done) => {
+    function (done) {
+      this.timeout(120000)
       let serverA = server(
         {
-          creedentials: serverCerts,
-          address: '127.0.0.1:50052'
+          credentials: serverCerts,
+          address: 'localhost:50052'
         }
       )
 
+      const service = [
+        {
+          proto: protos.helloWorld,
+          package: 'helloWorld',
+          name: 'Greeter',
+          methods: { sayHello: sayHello }
+        }
+      ]
+
       serverA
-        .addServices(services)
+        .addServices(service)
         .start(() => {
-          client({ address: '127.0.0.1:50052', creedentials: clientCerts })
+          client({ address: 'localhost:50052', credentials: clientCerts })
             .service('Greeter', protos.helloWorld)
             .sayHello({ name: 'Scaramouche' })
             .end((err, res) => {
