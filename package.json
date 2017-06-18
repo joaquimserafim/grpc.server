@@ -1,6 +1,6 @@
 {
   "name": "grpc.server",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "a simple abstraction around grpc.Server",
   "main": "index.js",
   "files": [
@@ -34,7 +34,6 @@
     "coveralls": "^2.13.1",
     "grpc.client": "^3.2.1",
     "mocha": "^3.4.2",
-    "node-forge": "^0.7.1",
     "nyc": "^11.0.2",
     "pre-commit": "^1.2.2",
     "standard": "^10.0.2"
