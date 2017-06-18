@@ -14,12 +14,12 @@ class GrpcServer {
 
   constructor (config = {}) {
     const address = config.address || '0.0.0.0:50051'
-    const creedentials = isObject(config.credentials)
+    const credentials = isObject(config.credentials)
       ? setAuthentication(config.credentials)
       : ServerCredentials.createInsecure()
 
     this._server = new Server()
-    this._server.bind(address, creedentials)
+    this._server.bind(address, credentials)
   }
 
   addServices (services = []) {
